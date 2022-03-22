@@ -1,6 +1,8 @@
 import recording
 import mfcc
 import predicting
+import requests
+import json
 
 # Start recording
 if(recording.record_sound()):
@@ -8,7 +10,7 @@ if(recording.record_sound()):
     lungConditionInstance1 = predicting.lungConditionPredicting()
     lungConditionInstance2 = predicting.lungConditionPredicting()
 
-    # Check that different instances of the LungCondition point back to the same object (singleton)
+    # # Check that different instances of the LungCondition point back to the same object (singleton)
     assert lungConditionInstance1 is lungConditionInstance2
 
     # Extract mfcc features
