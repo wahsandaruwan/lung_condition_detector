@@ -1,4 +1,5 @@
 import recording
+import mfcc
 import predicting
 
 # Start recording
@@ -10,6 +11,9 @@ if(recording.record_sound()):
     # Check that different instances of the LungCondition point back to the same object (singleton)
     assert lungConditionInstance1 is lungConditionInstance2
 
+    # Extract mfcc features
+    mfccFeatures = mfcc.startPreProcessing("sound.wav")
+
     # Make a prediction
-    condition = lungConditionInstance1.startPredicting("sound.wav")
+    condition = lungConditionInstance1.startPredicting(mfccFeatures)
     print(condition)

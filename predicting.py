@@ -1,9 +1,7 @@
-import librosa
 import tensorflow as tf
 import numpy as np
 
 AI_MODEL_PATH = "model.h5"
-CYCLES_PER_SECOND = 22050
 
 class LungCondition:
     """
@@ -19,14 +17,13 @@ class LungCondition:
     lungConditionInstance = None
 
 
-    def startPredicting(self, sound_file_path):
+    def startPredicting(self, mfcc_features):
         """
-        :param sound_file_path (str): Path to lung sound file to predict
-        :return predicted_keyword (str): Keyword predicted by the model
+        :param mfcc_features (n dimensional array): MFCC features extracted from lung sound file
+        :return predicted_condition (str): condition predicted by the model
         """
 
-        # Extract mfcc features
-        mfccFeatures = self.startPreProcessing(sound_file_path)
+        mfccFeatures = mfcc_features
 
         # We need a 4-dim array to feed to the model for prediction: (# samples, # time steps, # coefficients, 1)
         mfccFeatures = mfccFeatures[np.newaxis, ..., np.newaxis]
@@ -36,29 +33,6 @@ class LungCondition:
         predicted_index = np.argmax(predictions)
         predicted_condition = self.lungConditions[predicted_index]
         return predicted_condition
-
-
-    def startPreProcessing(self, sound_file_path, num_mfcc=13, n_fft=2048, hop_length=512):
-        """
-        Extract MFCCs from audio file.
-        :param file_path (str): Path of audio file
-        :param num_mfcc (int): Number of coefficients to extract
-        :param n_fft (int): Interval we consider to apply STFT. Measured in # of samples
-        :param hop_length (int): Sliding window for STFT. Measured in # of samples
-        :return MFCCs (ndarray): 2-dim array with MFCC data of shape (# time steps, # coefficients)
-        """
-
-        # load sound file
-        signal, sampleRate = librosa.load(sound_file_path)
-
-        if len(signal) >= CYCLES_PER_SECOND:
-            # Ensure consistency of the length of the signal
-            signal = signal[:CYCLES_PER_SECOND]
-
-            # Extract mfcc features
-            mfccFeatures = librosa.feature.mfcc(signal, sampleRate, n_mfcc=num_mfcc, n_fft=n_fft,
-                                         hop_length=hop_length)
-        return mfccFeatures.T
 
 
 def lungConditionPredicting():
